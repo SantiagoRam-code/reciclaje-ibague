@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class ClasificadorConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "clasificador"
+    verbose_name = "Clasificador de residuos"

@@ -1,0 +1,29 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}EcoIbagué · Clasificador de residuos{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'clasificador/estilos.css' %}">
+</head>
+<body>
+  <header class="encabezado">
+    <div class="contenedor fila">
+      <a class="marca" href="{% url 'clasificador:inicio' %}"><span class="punto" aria-hidden="true"></span>EcoIbagué</a>
+      <span class="subtitulo">Clasificador de residuos</span>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p> ECOIBAGUE - ELABORADO POR THOMAS, MATEO Y LUIS. </p>
+    </div>
+  </footer>
+
+  <script src="{% static 'clasificador/app.js' %}" defer></script>
+</body>
+</html>

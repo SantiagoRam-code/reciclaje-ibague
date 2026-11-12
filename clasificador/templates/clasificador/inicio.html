@@ -1,0 +1,92 @@
+{% extends "clasificador/base.html" %}
+{% load l10n %}
+
+{% block contenido %}
+<section class="tarjeta">
+  <h1>¿Qué residuo tienes?</h1>
+  <p class="ayuda">Sube una foto y te diremos en qué contenedor va.</p>
+
+  <ol class="pasos">
+    <li>Sube la foto</li>
+    <li>Revisa el resultado</li>
+    <li>Deposítalo</li>
+  </ol>
+
+  <form method="post" enctype="multipart/form-data" id="form-clasificar" novalidate>
+    {% csrf_token %}
+
+    <div class="zona-subida">
+      <div class="vista-previa" id="vista-previa" hidden>
+        <img id="imagen-previa" alt="Vista previa de la foto seleccionada">
+      </div>
+      <div class="zona-texto" id="zona-texto">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+        </svg>
+        <p class="zona-titulo">Elige una foto</p>
+        <p class="zona-detalle">JPG, PNG o WEBP · máximo 5 MB</p>
+      </div>
+      {{ form.imagen }}
+    </div>
+
+    {% if form.imagen.errors %}
+      <p class="error" role="alert">{{ form.imagen.errors|join:" " }}</p>
+    {% endif %}
+    {% if error %}
+      <p class="error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    <div class="acciones">
+      <button type="submit" class="boton" id="boton-clasificar" disabled>Clasificar</button>
+      <p class="nota" id="nota-carga" hidden>Analizando. La primera vez puede tardar un poco mientras se carga el modelo.</p>
+    </div>
+  </form>
+</section>
+
+{% if resultado %}
+<section class="tarjeta resultado" id="resultado" tabindex="-1" aria-live="polite">
+  <figure class="foto-resultado">
+    <img src="data:image/jpeg;base64,{{ resultado.miniatura }}" alt="Foto que analizamos">
+  </figure>
+
+  <span class="etiqueta">Resultado</span>
+  <h2>{{ resultado.categoria }}</h2>
+
+  <dl class="detalle">
+    <div>
+      <dt>Contenedor</dt>
+      <dd>{{ resultado.contenedor }}</dd>
+    </div>
+    <div>
+      <dt>Consejo</dt>
+      <dd>{{ resultado.consejo }}</dd>
+    </div>
+  </dl>
+
+  <div class="confianza">
+    <div class="confianza-cabecera">
+      <span>Confianza</span>
+      <span>{{ resultado.confianza }}%</span>
+    </div>
+    <div class="barra">{% localize off %}<div class="barra-relleno" style="width: {{ resultado.confianza }}%"></div>{% endlocalize %}</div>
+  </div>
+
+  {% if resultado.confianza_baja %}
+    <p class="aviso">La respuesta no es muy segura. Revisa las otras posibilidades antes de decidir.</p>
+  {% endif %}
+
+  {% if resultado.otras %}
+  <details class="otras">
+    <summary>Otras posibilidades</summary>
+    <ul>
+      {% for otra in resultado.otras %}
+        <li><span>{{ otra.nombre }}</span><span>{{ otra.confianza }}%</span></li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+
+  <a class="boton secundario" href="{% url 'clasificador:inicio' %}">Clasificar otra foto</a>
+</section>
+{% endif %}
+{% endblock %}
